@@ -77,7 +77,9 @@ Theorem silly_ex : forall p,
   even p = true ->
   odd (S p) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros p eq1 eq2 eq3.
+  apply eq2. apply eq1. apply eq3.
+Qed.
 (** [] *)
 
 (** To use the [apply] tactic, the (conclusion of the) fact
@@ -112,7 +114,9 @@ Theorem rev_exercise1 : forall (l l' : list nat),
   l = rev l' ->
   l' = rev l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l l' eq1. 
+  rewrite eq1. symmetry. apply rev_involutive.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, standard, optional (apply_rewrite)
@@ -121,7 +125,11 @@ Proof.
     [rewrite].  What are the situations where both can usefully be
     applied? *)
 
-(* FILL IN HERE
+(* We use rewrite when we want to substitute a part of our goal with something we 
+already knew. 
+Whereas, tactis is used when we want to use existing theorem or when we want to use 
+conclusion of a hypothesis to prove our current goal and add premise of the hypothesis 
+to the list of sub goals that needs to be proved.
 
     [] *)
 
@@ -195,7 +203,9 @@ Example trans_eq_exercise : forall (n m o p : nat),
      (n + p) = m ->
      (n + p) = (minustwo o).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m o p eq1 eq2.
+  rewrite eq2. rewrite eq1. reflexivity.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -282,7 +292,10 @@ Example injection_ex3 : forall (X : Type) (x y z : X) (l j : list X),
   j = z :: l ->
   x = y.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x y z l j eq1.
+  injection eq1 as H1 H2. rewrite <- H1. rewrite <- H2.
+  intros eq2. injection eq2 as H3. rewrite H3. reflexivity.
+Qed. 
 (** [] *)
 
 (** So much for injectivity of constructors.  What about disjointness? *)
@@ -332,7 +345,7 @@ Example discriminate_ex3 :
     x :: y :: l = [] ->
     x = z.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x y z l j contra. discriminate contra. Qed.
 (** [] *)
 
 (** For a more useful example, we can use [discriminate] to make a
