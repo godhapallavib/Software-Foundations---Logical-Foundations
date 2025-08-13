@@ -612,7 +612,7 @@ Proof.
   intros n. induction n as [| n' IHn'].
   - (* n = O *) simpl. intros m eq. destruct m as [| m'] eqn:E.
     + (* m = O *) reflexivity.
-    + (* m = S m' *) discriminate eq.
+    + (* m = S m' *) simpl. discriminate eq.
 
   - (* n = S n' *)
 
@@ -659,7 +659,14 @@ Proof.
 Theorem eqb_true : forall n m,
   n =? m = true -> n = m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n as [|n' IHn'].
+  - intros m eq. destruct m as [|m'].
+    + reflexivity.
+    + discriminate eq.
+  - intros m eq. destruct m as [| m'].
+    + discriminate eq.
+    + f_equal. apply IHn'. simpl in eq. apply eq. 
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, advanced (eqb_true_informal)
@@ -682,7 +689,15 @@ Theorem plus_n_n_injective : forall n m,
   n + n = m + m ->
   n = m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n as [| n'].
+  - simpl. destruct m as [| m'].
+    + simpl. intro eq. reflexivity.
+    + simpl. intros eq. discriminate eq.
+  - simpl. destruct m as [| m'].
+    + simpl. intros eq. discriminate eq.
+    + simpl. intros eq. rewrite <- plus_n_Sm, <- plus_n_Sm in eq. inversion eq.
+      f_equal. apply IHn'. apply H0.
+Qed.
 (** [] *)
 
 (** The strategy of doing fewer [intros] before an [induction] to
@@ -789,7 +804,14 @@ Theorem nth_error_after_last: forall (n : nat) (X : Type) (l : list X),
   length l = n ->
   nth_error l n = None.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n X l.
+  generalize dependent n. 
+  induction l as [| x l' IHl'].
+  - intros n eq. simpl. reflexivity.
+  - intros n eq. destruct n as [| n'].
+    + simpl. discriminate eq.
+    + simpl. apply IHl'. simpl in eq. inversion eq. reflexivity.
+Qed.  
 (** [] *)
 
 (* ################################################################# *)
@@ -977,7 +999,10 @@ Theorem combine_split : forall X Y (l : list (X * Y)) l1 l2,
   split l = (l1, l2) ->
   combine l1 l2 = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X Y l. induction l as [| n l' IHl'].
+  - intros l1 l2 eq. inversion eq. simpl. reflexivity.
+  - intros l1 l2 eq.
+Abort.
 (** [] *)
 
 (** The [eqn:] part of the [destruct] tactic is optional; although
@@ -1052,7 +1077,18 @@ Theorem bool_fn_applied_thrice :
   forall (f : bool -> bool) (b : bool),
   f (f (f b)) = f b.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros f b. destruct b eqn:E.
+  - destruct (f true) eqn:E1.
+    + rewrite E1, E1. reflexivity.
+    + destruct (f false) eqn:E2.
+      * rewrite E1. reflexivity.
+      * rewrite E2. reflexivity.
+  - destruct (f false) eqn:E1.
+    + destruct (f true) eqn:E2.
+      * rewrite E2. reflexivity.
+      * rewrite E1. reflexivity.
+    + rewrite E1, E1. reflexivity.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
