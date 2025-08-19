@@ -1028,13 +1028,14 @@ Theorem All_In :
     (forall x, In x l -> P x) <->
     All P l.
 Proof.
-  intros T P l. split. induction l as [| n l' IHl'].
+  (* FILL IN HERE *) Admitted.
+  (* intros T P l. split. induction l as [| n l' IHl'].
   - simpl. intros H. apply I. 
   - simpl. intros H. apply IHl'. intros x. intros H1. apply H. right. apply H1. 
   - simpl. induction l as [| n l' IHl'].
     + simpl. intros H x H1. destruct H1.
     + simpl. intros H x [H1 | H2]. apply IHl'. apply H. 
-Abort.
+Abort. *)
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, optional (combine_odd_even)
