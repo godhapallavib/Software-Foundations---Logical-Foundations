@@ -1985,6 +1985,19 @@ Lemma MStar'' : forall T (s : list T) (re : reg_exp T),
     s = fold app ss []
     /\ forall s', In s' ss -> s' =~ re.
 Proof.
+  intros T s re H1. remember (Star re) as re' eqn:Eq.
+  induction H1.
+  - discriminate.
+  - discriminate.
+  - discriminate.
+  - discriminate.
+  - discriminate.
+  - exists []. split.
+    + simpl. reflexivity.
+    + intros s'. simpl. intros H. destruct H.
+  - destruct IHexp_match2. 
+    + apply Eq.
+    + 
   (* FILL IN HERE *) Admitted.
 (** [] *)
 
@@ -2232,7 +2245,14 @@ Qed.
 (** **** Exercise: 2 stars, standard, especially useful (reflect_iff) *)
 Theorem reflect_iff : forall P b, reflect P b -> (P <-> b = true).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P b H. destruct H as [H1 | H2].
+  - split.
+    + intros H3. reflexivity.
+    + intros H3. apply H1.
+  - split.
+    + intros H3. exfalso. apply H2. apply H3.
+    + intros H3. discriminate H3.
+Qed.
 (** [] *)
 
 (** We can think of [reflect] as a variant of the usual "if and only
@@ -2291,7 +2311,15 @@ Theorem eqbP_practice : forall n l,
   count n l = 0 -> ~(In n l).
 Proof.
   intros n l Hcount. induction l as [| m l' IHl'].
-  (* FILL IN HERE *) Admitted.
+  - intros H. simpl in H. apply H.
+  - simpl in Hcount. destruct (eqbP n m).
+    + inversion Hcount.
+    + intros contra. destruct contra. 
+      * apply H. rewrite H0. reflexivity.
+      * apply IHl'. 
+        -- apply Hcount. 
+        -- apply H0.
+Qed.
 (** [] *)
 
 (** This small example shows reflection giving us a small gain in

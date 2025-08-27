@@ -210,9 +210,6 @@ Proof.
     look up a _different_ key [x2] in the resulting map, we get the
     same result that [m] would have given: *)
 
-(* NOTE: when we unfold t_update, the if condition is (x =? x)%string. To destruct such 
-   cases, we use eqb_spec. eqb_spec is used to switch between boolean test like this 
-   to logical propositions (x = y) or (x <> y) which are used for proofs and vice versa. *)
 Theorem t_update_neq : forall (A : Type) (m : total_map A) x1 x2 v,
   x1 <> x2 ->
   (x1 !-> v ; m) x2 = m x2.
