@@ -141,6 +141,7 @@ Notation "'_' '!->' v" := (t_empty v)
   (at level 100, right associativity).
 
 Example example_empty := (_ !-> false).
+Check example_empty.
 
 (** We next introduce a convenient notation for extending an existing
     map with a new binding. *)
@@ -188,7 +189,7 @@ Proof. reflexivity. Qed.
 Lemma t_apply_empty : forall (A : Type) (x : string) (v : A),
   (_ !-> v) x = v.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros A x v. reflexivity. Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, optional (t_update_eq)
@@ -196,11 +197,11 @@ Proof.
     Next, if we update a map [m] at a key [x] with a new value [v]
     and then look up [x] in the map resulting from the [update], we
     get back [v]: *)
-
+Search (?x =? ?x).
 Lemma t_update_eq : forall (A : Type) (m : total_map A) x v,
   (x !-> v ; m) x = v.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros A m x v. unfold t_update. rewrite eqb_refl. reflexivity. Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, optional (t_update_neq)
@@ -209,11 +210,17 @@ Proof.
     look up a _different_ key [x2] in the resulting map, we get the
     same result that [m] would have given: *)
 
+(* NOTE: when we unfold t_update, the if condition is (x =? x)%string. To destruct such 
+   cases, we use eqb_spec. eqb_spec is used to switch between boolean test like this 
+   to logical propositions (x = y) or (x <> y) which are used for proofs and vice versa. *)
 Theorem t_update_neq : forall (A : Type) (m : total_map A) x1 x2 v,
   x1 <> x2 ->
   (x1 !-> v ; m) x2 = m x2.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros A m x1 x2 v H. unfold t_update. destruct (eqb_spec x1 x2).
+  - exfalso. destruct H. apply e. 
+  - reflexivity.
+Qed. 
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, optional (t_update_shadow)
@@ -227,7 +234,11 @@ Proof.
 Lemma t_update_shadow : forall (A : Type) (m : total_map A) x v1 v2,
   (x !-> v2 ; x !-> v1 ; m) = (x !-> v2 ; m).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros A m x v1 v2. unfold t_update.
+  apply functional_extensionality. intros x0. destruct (eqb_spec x x0).
+  - reflexivity.
+  - reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard (t_update_same)
@@ -244,7 +255,11 @@ Proof.
 Theorem t_update_same : forall (A : Type) (m : total_map A) x,
   (x !-> m x ; m) = m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros A m x. unfold t_update. apply functional_extensionality.
+  intros x0. destruct (eqb_spec x x0).
+  - rewrite e. reflexivity.
+  - reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, standard, especially useful (t_update_permute)
@@ -260,7 +275,13 @@ Theorem t_update_permute : forall (A : Type) (m : total_map A)
   =
   (x2 !-> v2 ; x1 !-> v1 ; m).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros A m v1 v2 x1 x2 H. unfold t_update.
+  apply functional_extensionality. intros x. destruct (eqb_spec x1 x).
+  - destruct (eqb_spec x2 x).
+    + exfalso. apply H. rewrite e. apply e0.
+    + reflexivity.
+  - reflexivity.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
