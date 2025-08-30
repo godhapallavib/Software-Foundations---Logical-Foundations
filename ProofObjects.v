@@ -128,7 +128,7 @@ Qed.
     the [Show Proof] command to display the current state of the proof
     tree at various points in the following tactic proof. *)
 
-Theorem ev_4'' : ev 4.
+Theorem ev_4'' : ev 6.
 Proof.
   Show Proof.
   apply ev_SS.
