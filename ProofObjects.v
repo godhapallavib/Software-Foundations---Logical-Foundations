@@ -128,7 +128,7 @@ Qed.
     the [Show Proof] command to display the current state of the proof
     tree at various points in the following tactic proof. *)
 
-Theorem ev_4'' : ev 6.
+Theorem ev_4'' : ev 4.
 Proof.
   Show Proof.
   apply ev_SS.
@@ -174,10 +174,12 @@ Print ev_4'''.
 
 Theorem ev_8 : ev 8.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  apply ev_SS. apply ev_SS. apply ev_4. Qed.
 
-Definition ev_8' : ev 8
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition ev_8' : ev 8 :=
+  ev_SS 6 (ev_SS 4 (ev_4''')).
+
+Print ev_8'.
 (** [] *)
 
 (* ################################################################# *)
