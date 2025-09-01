@@ -391,6 +391,11 @@ Definition and_comm'_aux P Q (H : P /\ Q) : Q /\ P :=
   | conj HP HQ => conj HQ HP
   end.
 
+Definition proj2 Q R (HQR: Q /\ R) : R := 
+  match HQR with 
+    | conj HQ HR => HR
+  end.
+
 Definition and_comm' P Q : P /\ Q <-> Q /\ P :=
   conj (and_comm'_aux P Q) (and_comm'_aux Q P).
 
@@ -398,8 +403,8 @@ Definition and_comm' P Q : P /\ Q <-> Q /\ P :=
 
     Construct a proof object for the following proposition. *)
 
-Definition conj_fact : forall P Q R, P /\ Q -> Q /\ R -> P /\ R
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition conj_fact : forall P Q R, P /\ Q -> Q /\ R -> P /\ R := 
+  fun P Q R HPQ HQR => conj (proj1'' P Q HPQ ) (proj2 Q R HQR).
 (** [] *)
 
 (* ================================================================= *)
@@ -456,8 +461,12 @@ End Or.
 
     Construct a proof object for the following proposition. *)
 
-Definition or_commut' : forall P Q, P \/ Q -> Q \/ P
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition or_commut' : forall P Q, P \/ Q -> Q \/ P := 
+  fun P Q HPQ => 
+    match HPQ with 
+      | or_introl HP => or_intror HP 
+      | or_intror HQ => or_introl HQ 
+    end.
 (** [] *)
 
 (* ================================================================= *)
