@@ -511,8 +511,9 @@ Definition some_nat_is_even : exists n, ev n :=
 
     Construct a proof object for the following proposition. *)
 
-Definition ex_ev_Sn : ex (fun n => ev (S n))
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+    (* ex_intro takes P and then some n, and proof for P n *)
+Definition ex_ev_Sn : ex (fun n => ev (S n)) := 
+  ex_intro (fun n => ev (S n)) 1 (ev_SS 0 ev_0).
 (** [] *)
 
 (** To destruct existentials in a proof term we simply use match: *)
@@ -531,8 +532,11 @@ Definition dist_exists_or_term (X:Type) (P Q : X -> Prop) :
     Construct a proof object for the following proposition: *)
 Definition ex_match : forall (A : Type) (P Q : A -> Prop),
   (forall x, P x -> Q x) ->
-  (exists x, P x) -> (exists x, Q x)
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+  (exists x, P x) -> (exists x, Q x) := 
+  fun (A: Type) (P Q : A -> Prop) (H: forall x, P x -> Q x) (HPx: exists x, P x) => 
+    match HPx with 
+      | ex_intro _ x HP => ex_intro _ x (H x HP)
+    end.
 (** [] *)
 
 (* ================================================================= *)
@@ -550,8 +554,9 @@ Inductive True : Prop :=
 
     Construct a proof object for the following proposition. *)
 
-Definition p_implies_true : forall P, P -> True
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+    (* this function takes in 2 arguments -- one is P and other is proof/evidence for P *)
+Definition p_implies_true : forall P, P -> True := 
+  fun _ _ => I.
 (** [] *)
 
 (** [False] is equally simple -- indeed, so simple it may look
@@ -586,8 +591,8 @@ Definition false_implies_zero_eq_one : False -> 0 = 1 :=
 
     Construct a proof object for the following proposition. *)
 
-Definition ex_falso_quodlibet' : forall P, False -> P
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition ex_falso_quodlibet' : forall P, False -> P := 
+  fun P contra =>  match contra with end.
 (** [] *)
 
 End Props.
