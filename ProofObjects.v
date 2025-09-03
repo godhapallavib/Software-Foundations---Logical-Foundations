@@ -690,8 +690,13 @@ Qed.
     matching on the equality hypotheses. *)
 
 Definition eq_cons : forall (X : Type) (h1 h2 : X) (t1 t2 : list X),
-    h1 == h2 -> t1 == t2 -> h1 :: t1 == h2 :: t2
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+    h1 == h2 -> t1 == t2 -> h1 :: t1 == h2 :: t2 := 
+    fun (X : Type) (h1 h2 : X) (t1 t2 : list X) (Heh : h1 == h2) (Het : t1 == t2) => 
+      match Heh with 
+        | eq_refl h => match Het with 
+                        | eq_refl t => eq_refl (h :: t)
+                       end
+      end.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard (equality__leibniz_equality)
@@ -704,7 +709,7 @@ Definition eq_cons : forall (X : Type) (h1 h2 : X) (t1 t2 : list X),
 Lemma equality__leibniz_equality : forall (X : Type) (x y: X),
   x == y -> forall (P : X -> Prop), P x -> P y.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x y Hxy P HPx. destruct Hxy. apply HPx. Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard (equality__leibniz_equality_term)
@@ -714,8 +719,11 @@ Proof.
     proof term constructed by tactics in the previous exercise is
     needessly complicated. Hint: pattern-match as soon as possible. *)
 Definition equality__leibniz_equality_term : forall (X : Type) (x y: X),
-    x == y -> forall P : (X -> Prop), P x -> P y
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+    x == y -> forall P : (X -> Prop), P x -> P y := 
+    fun (X : Type) (x y : X) (Hxy : x == y) => 
+    match Hxy with 
+      | eq_refl x => fun (P: X -> Prop) (HPx: P x) => HPx (* here the goal is to return forall (P: X -> Prop) P x -> P x*)
+    end.
 (** [] *)
 
 (** **** Exercise: 3 stars, standard, optional (leibniz_equality__equality)
@@ -728,7 +736,7 @@ Definition equality__leibniz_equality_term : forall (X : Type) (x y: X),
 Lemma leibniz_equality__equality : forall (X : Type) (x y: X),
   (forall P:X->Prop, P x -> P y) -> x == y.
 Proof.
-(* FILL IN HERE *) Admitted.
+intros X x y HPxy. apply (HPxy (fun z => x == z)). apply eq_refl. Qed. (* we match P y (the conclusion of HPxy) with Goal (x == y). We chose a P such that we can apply HPxy. P (fun z => x == z) our P adds x to the left of the input.*)
 (** [] *)
 
 End EqualityPlayground.
