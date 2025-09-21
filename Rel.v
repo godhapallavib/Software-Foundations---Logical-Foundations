@@ -71,6 +71,9 @@ Definition partial_function {X: Type} (R: relation X) :=
 Inductive next_nat : nat -> nat -> Prop :=
   | nn n : next_nat n (S n).
 
+Check next_nat.
+Check relation.
+
 Check next_nat : relation nat.
 
 Theorem next_nat_partial_function :
@@ -105,13 +108,22 @@ Proof.
 (** Copy the definition of [total_relation] from your [IndProp]
     here so that this file can be graded on its own.  *)
 Inductive total_relation : nat -> nat -> Prop :=
-  (* FILL IN HERE *)
+  | total_rel n m : total_relation n m
 .
+
+(* | total_refl n : total_relation n n
+  | total_symm n m : total_relation n m
+  | total_trans n m p : total_relation n m -> total_relation m p -> total_relation n p *)
 
 Theorem total_relation_not_partial_function :
   ~ (partial_function total_relation).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  unfold not. unfold partial_function. intros.
+  assert (0 = 1) as Nonsense. {
+    apply H with (x := 0).
+    - apply total_rel.
+    - apply total_rel. }
+  discriminate Nonsense.   Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, optional (empty_relation_partial_function)
@@ -128,7 +140,8 @@ Inductive empty_relation : nat -> nat -> Prop :=
 Theorem empty_relation_partial_function :
   partial_function empty_relation.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  unfold partial_function. intros x y1 y2 H1 H2.
+  inversion H1. Qed.
 (** [] *)
 
 (* ----------------------------------------------------------------- *)
