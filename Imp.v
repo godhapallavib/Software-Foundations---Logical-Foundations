@@ -463,24 +463,63 @@ Admitted.
     it is sound.  Use the tacticals we've just seen to make the proof
     as short and elegant as possible. *)
 
-Fixpoint optimize_0plus_b (b : bexp) : bexp
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Fixpoint optimize_0plus_b (b : bexp) : bexp := 
+  match b with 
+  | BTrue => BTrue 
+  | BFalse => BFalse 
+  | BEq a1 a2 => BEq (optimize_0plus a1) (optimize_0plus a2)
+  | BNeq a1 a2 => BNeq (optimize_0plus a1) (optimize_0plus a2)
+  | BLe a1 a2 => BLe (optimize_0plus a1) (optimize_0plus a2)
+  | BGt a1 a2 => BGt (optimize_0plus a1) (optimize_0plus a2)
+  | BNot b => BNot (optimize_0plus_b b) 
+  | BAnd b1 b2 => BAnd (optimize_0plus_b b1) (optimize_0plus_b b2)
+  end.
 
 Example optimize_0plus_b_test1:
   optimize_0plus_b (BNot (BGt (APlus (ANum 0) (ANum 4)) (ANum 8))) =
                    (BNot (BGt (ANum 4) (ANum 8))).
-Proof. (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 
 Example optimize_0plus_b_test2:
   optimize_0plus_b (BAnd (BLe (APlus (ANum 0) (ANum 4)) (ANum 5)) BTrue) =
                    (BAnd (BLe (ANum 4) (ANum 5)) BTrue).
-Proof. (* FILL IN HERE *) Admitted.
+Proof. simpl. reflexivity. Qed.
 
 Theorem optimize_0plus_b_sound : forall b,
   beval (optimize_0plus_b b) = beval b.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  intros b. induction b.
+  - (* BTrue *)
+    simpl. reflexivity.
+  - (* BFalse *)
+    simpl. reflexivity.
+  - (* BEq *)
+    simpl. repeat (rewrite optimize_0plus_sound). reflexivity.
+  - (* BNeq *)
+    simpl. repeat (rewrite optimize_0plus_sound). reflexivity.
+  - (* BLe *)
+    simpl. repeat (rewrite optimize_0plus_sound). reflexivity.
+  - (* BGt *)
+    simpl. repeat (rewrite optimize_0plus_sound). reflexivity.
+  - (* BNot *)
+    simpl. rewrite IHb. reflexivity.
+  - (* BAnd *)
+    simpl. rewrite IHb1. rewrite IHb2. reflexivity.
+Qed.
+
+
+(* Optimised version *)
+Theorem optimize_0plus_b_sound' : forall b,
+  beval (optimize_0plus_b b) = beval b.
+Proof.
+  intros b. 
+  induction b; 
+  try (simpl; repeat (rewrite optimize_0plus_sound); reflexivity).
+  - (* BNot *)
+    simpl. rewrite IHb. reflexivity.
+  - (* BAnd *)
+    simpl. rewrite IHb1. rewrite IHb2. reflexivity.
+Qed.
 
 (** **** Exercise: 4 stars, standard, optional (optimize)
 
