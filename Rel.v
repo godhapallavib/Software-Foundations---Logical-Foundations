@@ -277,7 +277,12 @@ Definition symmetric {X: Type} (R: relation X) :=
 Theorem le_not_symmetric :
   ~ (symmetric le).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  unfold symmetric. unfold not.
+  intros. 
+  assert (1 <= 0) as Nonsense. {
+    apply H with (a := 0) (b:=1).
+    - apply le_S. apply le_n. }
+    inversion Nonsense. Qed.
 (** [] *)
 
 (** A relation [R] is _antisymmetric_ if [R a b] and [R b a] together
@@ -291,8 +296,20 @@ Definition antisymmetric {X: Type} (R: relation X) :=
 Theorem le_antisymmetric :
   antisymmetric le.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  unfold antisymmetric. intros a b H1 H2.
+  inversion H1.
+  - reflexivity.
+  - exfalso.
+    rewrite <- H0 in H2.
+    assert (Nonsense: S m <= m). {
+      apply le_trans with a.
+      apply H2.
+      apply H.
+    }
+    apply le_Sn_n with (n := m). apply Nonsense.
+Qed.
 (** [] *)
+
 
 (** **** Exercise: 2 stars, standard, optional (le_step) *)
 Theorem le_step : forall n m p,
@@ -300,7 +317,10 @@ Theorem le_step : forall n m p,
   m <= S p ->
   n <= p.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p H1 H2. inversion H2.
+  - apply le_S_n. apply le_trans with m. apply H1. apply H2.
+  - apply le_trans with m. apply le_Sn_le. apply H1. apply H0.
+Qed.
 (** [] *)
 
 (* ----------------------------------------------------------------- *)
