@@ -436,7 +436,11 @@ Lemma rsc_trans :
       clos_refl_trans_1n R y z ->
       clos_refl_trans_1n R x z.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X R x y z H1 H2.
+  induction H1 as [| x y y' Hxy _ IH].
+  - apply H2.
+  - apply rt1n_trans with y. apply Hxy. apply IH. apply H2.
+Qed. 
 (** [] *)
 
 (** Then we use these facts to prove that the two definitions of
@@ -448,7 +452,17 @@ Theorem rtc_rsc_coincide :
   forall (X:Type) (R: relation X) (x y : X),
     clos_refl_trans R x y <-> clos_refl_trans_1n R x y.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X R x y. split.
+  - intros H. induction H as [x y H | x | x y z Hxy Hyz IH IH'].
+    + apply rsc_R. apply H.
+    + apply rt1n_refl.
+    + apply rsc_trans with y. apply Hyz. apply IH'. 
+  - intros H. induction H as [x | x y z Hxy Hrest IH].
+    + apply rt_refl. 
+    + apply rt_trans with y. 
+      * apply rt_step. apply Hxy.
+      * apply IH.
+Qed.
 (** [] *)
 
 (* 2024-12-25 16:46 *)
