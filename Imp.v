@@ -829,6 +829,33 @@ Inductive aevalR : aexp -> nat -> Prop :=
     relation (in inference rule notation). *)
 (* FILL IN HERE *)
 
+(* Inductive bevalR : bexp -> bool -> Prop := 
+| E_BTrue : bevalR (BTrue) true 
+| E_BFalse : bevalR (BFalse) false 
+| E_BEq (a1 a2 : aexp) (n1 n2 : nat) : 
+        (aevalR a1 n1) -> 
+        (aevalR a2 n2) -> 
+        (bevalR (BEq a1 a2) (n1 =? n2))
+| E_BNeq (a1 a2 : aexp) (n1 n2 : nat) :
+         (aevalR a1 n1) -> 
+         (aevalR a2 n2) -> 
+         (bevalR (BNeq a1 a2) (negb (n1 =? n2)))
+| E_BLe (a1 a2 : aexp) (n1 n2 : nat) :
+        (aevalR a1 n1) -> 
+        (aevalR a2 n2) -> 
+        (bevalR (BLe a1 a2) (n1 <=? n2))
+| E_BGt (a1 a2 : aexp) (n1 n2 : nat) : 
+        (aevalR a1 n1) -> 
+        (aevalR a2 n2) -> 
+        (bevalR (BGt a1 a2) (negb (n1 <=? n2)))
+| E_BNot (be : bexp) (b : bool): 
+        (bevalR be b) -> 
+        (bevalR (BNot be) (negb b))
+| E_BAnd (be1 be2 : bexp) (b1 b2 : bool) : 
+         (bevalR be1 b1) -> 
+         (bevalR be2 b2) -> 
+         (bevalR (BAnd be1 be2) (andb b1 b2)).  *)
+
 (* Do not modify the following line: *)
 Definition manual_grade_for_beval_rules : option (nat*string) := None.
 (** [] *)
@@ -897,14 +924,63 @@ Qed.
 
 Reserved Notation "e '==>b' b" (at level 90, left associativity).
 Inductive bevalR: bexp -> bool -> Prop :=
-(* FILL IN HERE *)
+| E_BTrue : BTrue ==>b true 
+| E_BFalse : BFalse ==>b false 
+| E_BEq (a1 a2 : aexp) (n1 n2 : nat) : 
+        (a1 ==> n1) -> 
+        (a2 ==> n2) -> 
+        (BEq a1 a2) ==>b (n1 =? n2)
+| E_BNeq (a1 a2 : aexp) (n1 n2 : nat) :
+         (a1 ==> n1) -> 
+         (a2 ==> n2) -> 
+         (BNeq a1 a2) ==>b (negb (n1 =? n2))
+| E_BLe (a1 a2 : aexp) (n1 n2 : nat) :
+        (a1 ==> n1) -> 
+        (a2 ==> n2) -> 
+        (BLe a1 a2) ==>b (n1 <=? n2)
+| E_BGt (a1 a2 : aexp) (n1 n2 : nat) : 
+        (a1 ==> n1) -> 
+        (a2 ==> n2) -> 
+        (BGt a1 a2) ==>b (negb (n1 <=? n2))
+| E_BNot (be : bexp) (b : bool): 
+        (be ==>b b) ->
+        (BNot be) ==>b (negb b)
+| E_BAnd (be1 be2 : bexp) (b1 b2 : bool) : 
+         (be1 ==>b b1) ->
+         (be2 ==>b b2) ->
+         (BAnd be1 be2) ==>b (andb b1 b2)
 where "e '==>b' b" := (bevalR e b) : type_scope
 .
 
 Lemma bevalR_iff_beval : forall b bv,
   b ==>b bv <-> beval b = bv.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  split.
+  - intros H. induction H;
+    try (simpl; subst; reflexivity);
+    try (simpl; apply aevalR_iff_aeval in H; apply aevalR_iff_aeval in H0; subst; reflexivity).
+  - intros H. 
+    generalize dependent bv.
+    induction b; intros bv H.
+    + subst. apply E_BTrue.
+    + subst. constructor.
+    + subst. apply E_BEq.
+      * apply aevalR_iff_aeval. reflexivity.
+      * apply aevalR_iff_aeval. reflexivity.
+    + subst. constructor. 
+      * apply aevalR_iff_aeval. reflexivity.
+      * apply aevalR_iff_aeval. reflexivity.
+    + subst. constructor. 
+      * apply aevalR_iff_aeval. reflexivity.
+      * apply aevalR_iff_aeval. reflexivity.
+    + subst. constructor. 
+      * apply aevalR_iff_aeval. reflexivity.
+      * apply aevalR_iff_aeval. reflexivity.
+    + subst. simpl. apply E_BNot. apply IHb. reflexivity.
+    + subst. simpl. constructor. 
+      * apply IHb1. reflexivity.
+      * apply IHb2. reflexivity.
+Qed.
 (** [] *)
 
 End AExp.
