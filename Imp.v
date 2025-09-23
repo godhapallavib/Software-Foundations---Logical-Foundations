@@ -1806,6 +1806,14 @@ Proof.
     State and prove a specification of [XtimesYinZ]. *)
 
 (* FILL IN HERE *)
+Theorem XtimesYinZ_spec : forall st n1 n2 st', 
+  st X = n1 -> 
+  st Y = n2 -> 
+  st =[ XtimesYinZ ]=> st' -> 
+  st' Z = n1 * n2.
+Proof.
+  intros st n1 n2 st' HX HY Heval.
+  inversion Heval. subst. clear Heval. simpl. apply t_update_eq. Qed.
 
 (* Do not modify the following line: *)
 Definition manual_grade_for_XtimesYinZ_spec : option (nat*string) := None.
@@ -1824,7 +1832,15 @@ Proof.
       contradictory and so can be solved in one step with
       [discriminate]. *)
 
-  (* FILL IN HERE *) Admitted.
+   induction contra. 
+   - discriminate Heqloopdef.
+   - discriminate Heqloopdef.
+   - discriminate Heqloopdef.
+   - discriminate Heqloopdef.
+   - discriminate Heqloopdef.
+   - inversion Heqloopdef. subst. discriminate H.
+   - inversion Heqloopdef. subst. apply IHcontra2. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, standard (no_whiles_eqv)
@@ -1851,14 +1867,47 @@ Fixpoint no_whiles (c : com) : bool :=
     while loops.  Then prove its equivalence with [no_whiles]. *)
 
 Inductive no_whilesR: com -> Prop :=
- (* FILL IN HERE *)
+  | No_While_Skip : no_whilesR <{ skip }>
+  | No_While_Asgn : forall x a, no_whilesR <{ x := a }>
+  | No_While_Seq : forall c1 c2, 
+                   no_whilesR c1 -> 
+                   no_whilesR c2 -> 
+                   no_whilesR <{ c1 ; c2}>
+  | No_While_If : forall b c1 c2, 
+                  no_whilesR c1 -> 
+                  no_whilesR c2 -> 
+                  no_whilesR <{ if b then c1 else c2 end }>
 .
 
 Theorem no_whiles_eqv:
   forall c, no_whiles c = true <-> no_whilesR c.
 Proof.
-  (* FILL IN HERE *) Admitted.
-(** [] *)
+  intros c. split.
+  - intros H. induction c. 
+    + apply No_While_Skip.
+    + apply No_While_Asgn.
+    + apply No_While_Seq.
+      * simpl in H. apply andb_true_iff in H. 
+        destruct H as [H1 H2]. apply IHc1. apply H1.
+      * simpl in H. apply andb_true_iff in H.
+        destruct H as [H1 H2]. apply IHc2. apply H2.
+    + apply No_While_If. 
+      * simpl in H. apply andb_true_iff in H.
+        destruct H. apply IHc1. apply H.
+      * simpl in H. apply andb_true_iff in H.
+        destruct H. apply IHc2. apply H0.
+    + simpl in H. discriminate H.
+  - intros H. induction H.
+    + simpl. reflexivity.
+    + simpl. reflexivity.
+    + simpl. apply andb_true_iff. split. 
+      * assumption.
+      * assumption.
+    + simpl. apply andb_true_iff. split.
+      * assumption.
+      * assumption.
+Qed.
+ (** [] *)
 
 (** **** Exercise: 4 stars, standard (no_whiles_terminating)
 
@@ -1868,6 +1917,14 @@ Proof.
     Use either [no_whiles] or [no_whilesR], as you prefer. *)
 
 (* FILL IN HERE *)
+Theorem no_whiles_terminating : 
+forall c, no_whilesR c -> forall st, exists st', st =[ c ]=> st'.
+Proof.
+  intros. induction H. 
+  - exists st. apply E_Skip.
+  - exists (x !-> (aeval st a); st). apply E_Asgn. reflexivity.
+  - inversion H. 
+Admitted.
 
 (* Do not modify the following line: *)
 Definition manual_grade_for_no_whiles_terminating : option (nat*string) := None.
